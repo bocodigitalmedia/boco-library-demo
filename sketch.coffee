@@ -26,7 +26,7 @@ class DocumentRepository
     require('uuid').v4()
 
   find: (id, callback) ->
-    unless @collection.hasOwnProperty id?
+    unless @collection.hasOwnProperty id
       error = Error()
       error.name = "DocumentNotFound"
       error.message = "Document not found."
@@ -79,7 +79,6 @@ class DocumentRepository
     delete @collection[id]
     return callback null, doc
 
-
 expressApp = Express()
 
 documentRepository = new DocumentRepository
@@ -88,14 +87,34 @@ documentRepository = new DocumentRepository
 expressApp.use BodyParser.json()
 
 expressApp.get "/documents", (request, response) ->
-  # TODO: this is a workaround, do something for reals here
-  response.send 200, documentRepository.collection
+  response.json documentRepository.collection
 
 expressApp.post "/documents", (request, response) ->
   doc = new Document request.body
   documentRepository.insert doc, (error, doc) ->
     throw error if error?
-    response.send 200, doc
+    response.json doc
+
+
+expressApp.get "/documents/:id", (request, response) ->
+  id = request.params.id
+  console.log "finding document #{id}"
+  documentRepository.find id, (error, doc) ->
+    throw error if error?
+    response.json doc
+
+expressApp.put "/documents/:id", (request, response) ->
+  doc = new Document request.body
+  doc.id = request.params.id
+  documentRepository.update doc, (error, doc) ->
+    throw error if error?
+    response.json doc
+
+expressApp.delete "/documents/:id", (request, response) ->
+  id = request.params.id
+  documentRepository.delete id, (error, doc) ->
+    throw error if error?
+    response.json doc
 
 expressApp.listen process.env.PORT, ->
   console.log "Demo server started"
