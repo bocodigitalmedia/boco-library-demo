@@ -109,7 +109,7 @@
         viewEl.replaceChild(newEl, oldEl);
       }
 
-      function onWindowLoad() {
+      function refreshAllDocumentsView() {
         requestDocumentList(function(error, docs) {
 
           if(error != null) {
@@ -119,6 +119,10 @@
 
           return updateAllDocumentsView(docs);
         });
+      }
+
+      function onWindowLoad() {
+        refreshAllDocumentsView();
       }
 
     }(this));
