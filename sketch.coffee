@@ -86,8 +86,8 @@ expressApp = Express()
 httpServer = HTTP.createServer expressApp
 socketServer = SocketIO httpServer
 
-publishChangeEvent = ->
-  socketServer.emit "library.changed"
+publishEvent = (name, payload) ->
+  socketServer.emit name, payload
 
 documentRepository = new DocumentRepository
   collection: require('./documents.json')
@@ -111,7 +111,7 @@ expressApp.post "/documents", (request, response) ->
   doc = new Document request.body
   documentRepository.insert doc, (error, doc) ->
     throw error if error?
-    publishChangeEvent()
+    publishEvent "library.document.inserted", doc
     response.json doc
 
 expressApp.get "/documents/:id", (request, response) ->
@@ -126,14 +126,14 @@ expressApp.put "/documents/:id", (request, response) ->
   doc.id = request.params.id
   documentRepository.update doc, (error, doc) ->
     throw error if error?
-    publishChangeEvent()
+    publishEvent "library.document.updated", doc
     response.json doc
 
 expressApp.delete "/documents/:id", (request, response) ->
   id = request.params.id
   documentRepository.delete id, (error, doc) ->
     throw error if error?
-    publishChangeEvent()
+    publishEvent "library.document.deleted", doc
     response.json doc
 
 httpServer.listen process.env.PORT, ->

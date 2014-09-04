@@ -25,7 +25,7 @@
       listEl.setAttribute("id", "document-" + doc.id);
       listEl.appendChild(divEl);
 
-      return divEl;
+      return listEl;
     }
 
     function onDocumentListReceived() {
@@ -53,7 +53,31 @@
       xhr.send();
     }
 
-    socket.on("library.changed", updateDocumentView);
+    function removeDocument(doc) {
+      console.log("removed", doc);
+      var docElId = "document-" + doc.id;
+      var docEl = document.getElementById(docElId);
+      viewEl.removeChild(docEl);
+    }
+
+    function addDocument(doc) {
+      console.log("added", doc);
+      var docEl = createDocumentViewElement(doc);
+      viewEl.appendChild(docEl);
+    }
+
+    function changeDocument(doc) {
+      console.log("change", doc);
+      var docElId = "document-" + doc.id;
+      var oldEl = document.getElementById(docElId);
+      var newEl = createDocumentViewElement(doc);
+      viewEl.replaceChild(newEl, oldEl);
+    }
+
+    socket.on("library.document.deleted", removeDocument);
+    socket.on("library.document.inserted", addDocument);
+    socket.on("library.document.updated", changeDocument);
+
     window.onload = updateDocumentView;
   </script>
 </body>
