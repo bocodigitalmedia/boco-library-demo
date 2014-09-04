@@ -39,7 +39,7 @@ class DocumentRepository
     doc = @collection[id]
     return callback null, doc
 
-  insert: (doc, callback) ->
+  create: (doc, callback) ->
     doc.id ?= @generateId
 
     if @collection.hasOwnProperty doc.id
@@ -109,9 +109,10 @@ expressApp.get "/documents", (request, response) ->
 
 expressApp.post "/documents", (request, response) ->
   doc = new Document request.body
-  documentRepository.insert doc, (error, doc) ->
+  documentRepository.create doc, (error, doc) ->
     throw error if error?
-    publishEvent "library.document.inserted", doc
+    publishEvent "library.document.created",
+      document: doc
     response.json doc
 
 expressApp.get "/documents/:id", (request, response) ->
@@ -126,14 +127,16 @@ expressApp.put "/documents/:id", (request, response) ->
   doc.id = request.params.id
   documentRepository.update doc, (error, doc) ->
     throw error if error?
-    publishEvent "library.document.updated", doc
+    publishEvent "library.document.updated",
+      document: doc
     response.json doc
 
 expressApp.delete "/documents/:id", (request, response) ->
   id = request.params.id
   documentRepository.delete id, (error, doc) ->
     throw error if error?
-    publishEvent "library.document.deleted", doc
+    publishEvent "library.document.deleted",
+      document: doc
     response.json doc
 
 httpServer.listen process.env.PORT, ->
