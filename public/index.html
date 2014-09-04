@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+<head>
+  <title>Library Demo</title>
+</head>
+<body>
+
+  <ul id="allDocumentsView">
+  </ul>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    var socket = io();
+    var viewEl = document.getElementById("allDocumentsView");
+
+    function createDocumentViewElement(doc) {
+      var linkEl = document.createElement("a");
+      linkEl.setAttribute("href", doc.url);
+      linkEl.innerText = doc.name;
+
+      var divEl = document.createElement("div");
+      divEl.appendChild(linkEl);
+
+      var listEl = document.createElement("li");
+      listEl.setAttribute("id", "document-" + doc.id);
+      listEl.appendChild(divEl);
+
+      return divEl;
+    }
+
+    function onDocumentListReceived() {
+      var json = this.responseText;
+      var docs = JSON.parse(json);
+      var id, doc, docViewEl;
+      var chunks = [];
+
+      viewEl.innerHTML = "";
+
+      for(id in docs) {
+        if(docs.hasOwnProperty(id)) {
+          doc = docs[id];
+          docViewEl = createDocumentViewElement(doc);
+          viewEl.appendChild(docViewEl);
+        }
+      }
+
+    }
+
+    function updateDocumentView() {
+      var xhr = new XMLHttpRequest();
+      xhr.onload = onDocumentListReceived;
+      xhr.open("get", "/documents", true);
+      xhr.send();
+    }
+
+    socket.on("library.changed", updateDocumentView);
+    window.onload = updateDocumentView;
+  </script>
+</body>
