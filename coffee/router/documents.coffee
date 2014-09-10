@@ -4,6 +4,7 @@ BodyParser = require 'body-parser'
 module.exports = (config = {}) ->
   repository = config.documentRepository
   constructDocument = config.constructDocument
+  publishEvent = config.publishEvent
   jsonBodyParser = BodyParser.json()
   router = new Express.Router()
 
