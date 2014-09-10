@@ -25,13 +25,14 @@ PORT=3000 npm run-script demo
 
 ## Documents JSON
 
-You can modify the documents available by changing `documents.json` in the root directory.
+You can modify the documents available by changing `documents.json` in the `data` directory.
 
 ## Administration
 
 The library can be managed using a simple REST interface at http://localhost:3000/documents
 
 ### List documents
+
 ```
 GET /documents
 {
