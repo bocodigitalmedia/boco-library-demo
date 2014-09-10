@@ -31,6 +31,21 @@ You can modify the documents available by changing `documents.json` in the root 
 
 The library can be managed using a simple REST interface at http://localhost:3000/documents
 
+### List documents
+```
+GET /documents
+{
+  "xxx-xxx-xxx-doc1": {
+    "id": "xxx-xxx-xxx-doc1",
+    "url": "http://example.com/document1.pdf"
+  },
+  "xxx-xxx-xxx-doc2": {
+    "id": "xxx-xxx-xxx-doc2",
+    "url": "http://example.com/document2.pdf"
+  }
+}
+```
+
 ### Create a document
 
 ```
@@ -54,6 +69,24 @@ POST /documents/:id
 ```
 DELETE /documents/:id
 ```
+
+
+## Events
+
+Events are dispatched using `socket.io`.
+
+### library.document.deleted
+
+A document was deleted from the library
+
+### library.document.created
+
+A document was added to the library
+
+### library.document.updated
+
+A document within the library was updated
+
 
 ## Live view
 

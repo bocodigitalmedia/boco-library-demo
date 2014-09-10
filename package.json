@@ -2,10 +2,9 @@
   "name": "boco-library-demo",
   "version": "0.1.0",
   "description": "Boco Library Demo",
-  "main": "./lib/index.js",
+  "main": "./demo.coffee",
   "scripts": {
     "test": "./node_modules/coffee-script/bin/coffee -l README.md",
-    "compile": "rm -rf lib && mkdir lib && ./node_modules/coffee-script/bin/coffee -cm -o lib coffee",
     "demo": "./node_modules/coffee-script/bin/coffee demo.coffee"
   },
   "repository": {
