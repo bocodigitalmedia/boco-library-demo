@@ -77,15 +77,16 @@ Events are dispatched using `socket.io`.
 
 ### library.document.deleted
 
-A document was deleted from the library
+A document was deleted from the library. Payload contains a `document` property, reflecting the document that was deleted.
+
 
 ### library.document.created
 
-A document was added to the library
+A document was added to the library. Payload contains a `document` property, reflecting the document that was created.
 
 ### library.document.updated
 
-A document within the library was updated
+A document within the library was updated. Payload contains a `document` property, reflecting the document that was updated.
 
 
 ## Live view
