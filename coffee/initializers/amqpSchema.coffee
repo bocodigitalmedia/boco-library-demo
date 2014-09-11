@@ -1,6 +1,7 @@
 Async = require 'async'
-module.exports = (config, deps, callback) ->
-  channel = deps.amqpChannel
+
+module.exports = (config, depends, callback) ->
+  channel = depends.amqpChannel
 
   assertEventsExchange = (done) ->
     name = config.amqp.eventsExchangeName
@@ -19,8 +20,11 @@ module.exports = (config, deps, callback) ->
     pattern = "#"
     channel.bindQueue queue, exchange, pattern, null, done
 
-  Async.series [
+  steps = [
     assertEventsExchange
     assertEventsQueue
     bindEventsQueue
-  ], (error) -> callback error, deps
+  ]
+
+  Async.series steps, (error) ->
+    callback error, depends
