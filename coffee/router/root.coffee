@@ -1,6 +1,6 @@
 Router = require('express').Router
 
-module.exports = (config = {}) ->
+rootRouter = (config = {}) ->
   router = new Router()
   resolveStaticPath = config.resolveStaticPath
 
@@ -11,3 +11,5 @@ module.exports = (config = {}) ->
   router.get "/", getIndex
 
   return router
+
+module.exports = rootRouter

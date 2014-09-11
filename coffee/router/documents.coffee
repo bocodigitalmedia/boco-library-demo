@@ -1,7 +1,7 @@
 Express = require 'express'
 BodyParser = require 'body-parser'
 
-module.exports = (config = {}) ->
+documentsRouter = (config = {}) ->
   repository = config.documentRepository
   constructDocument = config.constructDocument
   publishEvent = config.publishEvent
@@ -47,3 +47,5 @@ module.exports = (config = {}) ->
   router.delete "/:id", jsonBodyParser, deleteDocument
 
   return router
+
+module.exports = documentsRouter
