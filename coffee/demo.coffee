@@ -9,41 +9,71 @@ HTTP = require 'http'
 Document = require './Document'
 DocumentRepository = require './DocumentRepository'
 
-router = require './router'
-expressApp = Express()
-httpServer = HTTP.createServer expressApp
-socketServer = SocketIO httpServer
+routers = require './routers'
+config = require './config'
+initializers = require './initializers'
 
-publishEvent = (name, payload) ->
-  socketServer.emit name, payload
+initializers.initialize config, (error, depends) ->
 
-constructDocument = (props) ->
-  new Document props
+  expressApp = Express()
+  httpServer = HTTP.createServer expressApp
+  socketServer = SocketIO httpServer
 
-resolveDataPath = (args...) ->
-  allArgs = [__dirname, '..', 'data'].concat args
-  Path.resolve.apply Path, allArgs
+  publishEvent = (name, payload) ->
+    exchange = config.amqp.eventsExchangeName
+    routingKey = name
+    event = name: name, payload: payload
+    json = JSON.stringify event
+    buffer = new Buffer json
+    channel = depends.amqpPublisher
+    options = persistent: true
 
-resolveStaticPath = (args...) ->
-  allArgs = [__dirname, '..', 'public'].concat args
-  Path.resolve.apply Path, allArgs
+    channel.publish exchange, routingKey, buffer, options, (error) ->
+      throw error if error?
 
-documentRepository = new DocumentRepository
-  collection: require resolveDataPath('documents.json')
+  constructDocument = (props) ->
+    new Document props
 
-# router: /
-rootRouter = router.root
-  resolveStaticPath: resolveStaticPath
+  resolveDataPath = (args...) ->
+    allArgs = [__dirname, '..', 'data'].concat args
+    Path.resolve.apply Path, allArgs
 
-expressApp.use "/", rootRouter
+  resolveStaticPath = (args...) ->
+    allArgs = [__dirname, '..', 'public'].concat args
+    Path.resolve.apply Path, allArgs
 
-# router: /documents
-documentsRouter = router.documents
-  constructDocument: constructDocument
-  publishEvent: publishEvent
-  documentRepository: documentRepository
+  documentRepository = new DocumentRepository
+    collection: require resolveDataPath('documents.json')
 
-expressApp.use "/documents", documentsRouter
+  # Configure Express Routes....................................................
 
-httpServer.listen process.env.PORT, ->
-  console.log "Demo server started", httpServer.address()
+  # router: /
+  rootRouter = routers.root
+    resolveStaticPath: resolveStaticPath
+
+  expressApp.use "/", rootRouter
+
+  # router: /documents
+  documentsRouter = routers.documents
+    constructDocument: constructDocument
+    publishEvent: publishEvent
+    documentRepository: documentRepository
+
+  expressApp.use "/documents", documentsRouter
+
+  # Start the server ...........................................................
+  httpServer.listen process.env.PORT, ->
+    console.log "Demo server started", httpServer.address()
+
+    # Process events from the events queue .....................................
+    channel = depends.amqpConsumer
+    queue = config.amqp.eventsQueueName
+    options = noAck: false
+
+    consumeFn = (message) ->
+      json = message.content.toString()
+      event = JSON.parse json
+      socketServer.emit event.name, event.payload
+      channel.ack message
+
+    channel.consume queue, consumeFn, options
