@@ -2,6 +2,7 @@
 
 Simple library demo.
 
+## 
 ## Installation
 
 Clone the repository locally:
@@ -15,6 +16,12 @@ Install the package and its dependencies:
 ```
 cd boco-library-demo
 npm install
+```
+
+Make sure rabbitmq is running
+
+```
+rabbitmq-server
 ```
 
 Run the demo server, using the specified `PORT`:
