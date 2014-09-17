@@ -2,7 +2,7 @@
 
 Simple library demo.
 
-## 
+##
 ## Installation
 
 Clone the repository locally:
@@ -102,3 +102,9 @@ A document within the library was updated. Payload contains a `document` propert
 The live view via websockets can be accessed by pointing a browser to http://localhost:3000/
 
 As you add, update, and remove documents, the view will change.
+
+
+## File Manager
+
+Browse to `/files` to upload your own files to be used by the documents manager.
+You may then set the url as follows: `http://[servername]/files/[filename]`
