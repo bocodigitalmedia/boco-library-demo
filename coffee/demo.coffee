@@ -46,6 +46,12 @@ initializers.initialize config, (error, depends) ->
 
   expressApp.use "/", rootRouter
 
+  # router: /files
+  filesRouter = routers.files
+    uploadsFolderPath: config.uploadsFolderPath
+
+  expressApp.use "/files/", filesRouter
+
   # router: /documents
   documentsRouter = routers.documents
     constructDocument: constructDocument
