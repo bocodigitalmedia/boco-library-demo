@@ -24,6 +24,6 @@
     "body-parser": "~1.7.0",
     "coffee-script": "~1.6.3",
     "amqplib": "~0.2.1",
-    "busboy": "~0.2.8"
+    "connect-busboy": "0.0.1"
   }
 }
