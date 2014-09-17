@@ -34,22 +34,15 @@ initializers.initialize config, (error, depends) ->
   constructDocument = (props) ->
     new Document props
 
-  resolveDataPath = (args...) ->
-    allArgs = [__dirname, '..', 'data'].concat args
-    Path.resolve.apply Path, allArgs
-
-  resolveStaticPath = (args...) ->
-    allArgs = [__dirname, '..', 'public'].concat args
-    Path.resolve.apply Path, allArgs
-
-  documentRepository = new DocumentRepository
-    collection: require resolveDataPath('documents.json')
+  documentsPath = Path.join config.dataFolderPath, "documents.json"
+  documents = require documentsPath
+  documentRepository = new DocumentRepository collection: documents
 
   # Configure Express Routes....................................................
 
   # router: /
   rootRouter = routers.root
-    resolveStaticPath: resolveStaticPath
+    staticFolderPath: config.staticFolderPath
 
   expressApp.use "/", rootRouter
 

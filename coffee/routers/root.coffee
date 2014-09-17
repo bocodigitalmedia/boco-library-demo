@@ -1,11 +1,12 @@
+Path = require 'path'
 Router = require('express').Router
 
 rootRouter = (config = {}) ->
   router = new Router()
-  resolveStaticPath = config.resolveStaticPath
+  staticFolderPath = config.staticFolderPath
 
   getIndex = (request, response) ->
-    path = resolveStaticPath "index.html"
+    path = Path.join staticFolderPath, "index.html"
     response.sendFile path
 
   router.get "/", getIndex
