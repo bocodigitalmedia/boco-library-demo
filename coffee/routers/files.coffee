@@ -1,3 +1,4 @@
+When = require 'when'
 Path = require 'path'
 Express = require 'express'
 BusBoy = require 'connect-busboy'
@@ -5,23 +6,89 @@ FileSystem = require 'fs'
 
 filesRouter = (config = {}) ->
   uploadsFolderPath = config.uploadsFolderPath
+  constructDocument = config.constructDocument
+  repository = config.documentRepository
+  publishEvent = config.publishEvent
+
   busboy = BusBoy()
   router = Express()
 
   uploadFile = (request, response) ->
     baseUrl = request.baseUrl
+    fields = {}
+    writeFilePromises = []
 
-    request.busboy.on 'file', (fieldName, uploadStream, fileName, encoding, mimeType) ->
+    writeFile = (readableStream, fileName, encoding) ->
       uploadPath = Path.join uploadsFolderPath, fileName
-      writeStream = FileSystem.createWriteStream uploadPath
-      uploadStream.pipe writeStream
+      writeStream = FileSystem.createWriteStream uploadPath, encoding: encoding
 
-      writeStream.on 'close', ->
-        response.redirect baseUrl
+      readableStream.pipe writeStream
+      When.promise (resolve, reject) ->
+        writeStream.on 'error', (error) -> reject error
+        writeStream.on 'close', -> resolve()
 
-      writeStream.on 'error', (error) ->
-        response.status(500).send "Internal Server Error"
+    onFile = (fieldName, stream, fileName, encoding, mimeType) ->
+      writeFilePromise = writeFile stream, fileName, encoding
+      writeFilePromises.push writeFilePromise
+      fields[fieldName] =
+        fileName: fileName
+        encoding: encoding
+        mimeType: mimeType
 
+    onField = (fieldName, value) ->
+      fields[fieldName] = value
+
+    onFinish = ->
+      allFilesWritten = When.all writeFilePromises
+
+      When(allFilesWritten)
+        .then(processFields)
+        .catch(handleError)
+        .done()
+
+    isPresent = (value) ->
+      return false unless value?
+      return value isnt ""
+
+    validateFields = ->
+      errors = []
+
+      unless isPresent fields.file
+        errors.push "File must be present"
+
+      unless isPresent fields.name
+        errors.push "Name must be present"
+
+      message = errors.join ". "
+      throw Error(message) unless errors.length is 0
+
+    constructFileUrl = (fileName) ->
+      host = request.get "host"
+      baseUrl = request.baseUrl
+      "#{host}#{baseUrl}/#{fileName}"
+
+    processFields = ->
+      validateFields()
+
+      params = {}
+      params.name = fields.name
+      params.url = constructFileUrl fields.file.fileName
+      params.mimeType = fields.file.mimeType
+      params.encoding = fields.file.encoding
+
+      document = constructDocument params
+
+      repository.create document, (error, document) ->
+        throw error if error?
+        publishEvent "library.document.created", document: document
+        response.redirect request.baseUrl
+
+    handleError = (error) ->
+      response.status(500).send error.message
+
+    request.busboy.on 'file', onFile
+    request.busboy.on 'field', onField
+    request.busboy.on 'finish', onFinish
     request.pipe request.busboy
 
   showIndex = (request, response) ->
@@ -32,15 +99,30 @@ filesRouter = (config = {}) ->
       response.status 200
       response.write "<!doctype html>"
       response.write "<html>"
-      response.write "<head><title>Files</title></head>"
+      response.write "<head>"
+      response.write "<title>Files</title>"
+      response.write """
+      <style type="text/css">
+      form li {
+        list-style-type: none;
+      }
+      form label {
+        display: block;
+      }
+      </style>
+      """
+      response.write "</head>"
       response.write "<body>"
       response.write "<h1>Files</h1>"
       response.write "<ul>"
       response.write "<li><a href=\"#{baseUrl}/#{path}\">#{path}</a></li>" for path in files
       response.write "</ul>"
       response.write "<form action=\"#{baseUrl}\" method=\"post\" enctype=\"multipart/form-data\">"
-      response.write '<input type="file" name="file" />'
-      response.write '<input type="submit" />'
+      response.write "<ul>"
+      response.write '<li><label for="file">File</label><input type="file" name="file" /></li>'
+      response.write '<li><label for="name">Name</label><input type="text" name="name" /></li>'
+      response.write '<li><input type="submit" /></li>'
+      response.write "</ul>"
       response.write '</form>'
       response.write "</body>"
       response.write "</html>"

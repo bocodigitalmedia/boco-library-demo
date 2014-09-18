@@ -48,6 +48,9 @@ initializers.initialize config, (error, depends) ->
 
   # router: /files
   filesRouter = routers.files
+    constructDocument: constructDocument
+    publishEvent: publishEvent
+    documentRepository: documentRepository
     uploadsFolderPath: config.uploadsFolderPath
 
   expressApp.use "/files/", filesRouter
