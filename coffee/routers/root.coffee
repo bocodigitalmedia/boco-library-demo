@@ -6,8 +6,7 @@ rootRouter = (config = {}) ->
   staticFolderPath = config.staticFolderPath
 
   getIndex = (request, response) ->
-    path = Path.join staticFolderPath, "index.html"
-    response.sendFile path
+    response.render "index"
 
   router.get "/", getIndex
 

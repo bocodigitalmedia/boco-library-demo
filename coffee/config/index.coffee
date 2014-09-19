@@ -6,3 +6,5 @@ module.exports =
   staticFolderPath: Path.join rootPath, 'public'
   dataFolderPath: Path.join rootPath, 'data'
   uploadsFolderPath: Path.join rootPath, 'uploads'
+  staticFolderPath: Path.join rootPath, 'public'
+  viewsFolderPath: Path.join rootPath, 'views'

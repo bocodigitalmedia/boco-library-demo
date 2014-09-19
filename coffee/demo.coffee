@@ -39,7 +39,12 @@ initializers.initialize config, (error, depends) ->
   documents = require documentsPath
   documentRepository = new DocumentRepository collection: documents
 
-  # Configure Express Routes....................................................
+  # Configure Express ..........................................................
+  expressApp.set 'views', config.viewsFolderPath
+  expressApp.set 'view engine', 'hbs'
+
+  staticMiddleware = Express.static config.staticFolderPath
+  expressApp.use staticMiddleware
 
   # router: /
   rootRouter = routers.root
