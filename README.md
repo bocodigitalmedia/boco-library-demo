@@ -2,18 +2,17 @@
 
 Simple library demo.
 
-##
 ## Installation
 
 Clone the repository locally:
 
-```
+```bash
 git clone https://github.com/bocodigitalmedia/boco-library-demo
 ```
 
 Install the package and its dependencies:
 
-```
+```bash
 cd boco-library-demo
 npm install
 ```

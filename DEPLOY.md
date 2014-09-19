@@ -1,22 +1,25 @@
-# Deploying the first time
+# Deploying
 
-```
-cd /srv/www/
-git clone git@github.com:bocodigitalmedia/boco-library-demo.git
-cd boco-library-demo
-npm install
-sudo cp -f ./upstart.conf /etc/init/boco-library-demo.conf
-sudo initctl reload-configuration
-sudo service start boco-library-demo
+Set the following variables for deployment per-run:
+
+```bash
+DEPLOY_PATH="/srv/www/boco-library-demo"
+GIT_REPO="git@github.com:bocodigitalmedia/boco-library-demo.git"
 ```
 
-# Updating the deploy
+## Initial deployment
 
+Simply clone the repo as follows, then follow the instructions for "updating a deployment".
+
+```bash
+git clone $GIT_REPO $DEPLOY_PATH
 ```
-cd /srv/www/boco-library-demo
-git pull
-npm install
-sudo cp -f ./upstart.conf /etc/init/boco-library-demo.conf
-sudo initctl reload boco-library-demo
-sudo service boco-library-demo restart
+
+## Updating a deployment
+
+Execute the `bin/deploy` script:
+
+```bash
+cd $DEPLOY_PATH
+./bin/deploy
 ```
