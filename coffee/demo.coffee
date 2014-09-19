@@ -16,9 +16,8 @@ initializers = require './initializers'
 initializers.initialize config, (error, depends) ->
   throw error if error?
 
-  expressApp = Express()
-  httpServer = HTTP.createServer expressApp
-  socketServer = SocketIO httpServer
+  # Dependencies
+  #-----------------------------------------------------------------------------
 
   publishEvent = (name, payload) ->
     exchange = config.amqp.eventsExchangeName
@@ -39,41 +38,50 @@ initializers.initialize config, (error, depends) ->
   documents = require documentsPath
   documentRepository = new DocumentRepository collection: documents
 
-  # Configure Express ..........................................................
+  # Configure Express
+  #-----------------------------------------------------------------------------
+  expressApp = Express()
+
+  # Views
   expressApp.set 'views', config.viewsFolderPath
   expressApp.set 'view engine', 'hbs'
 
+  # Static
   staticMiddleware = Express.static config.staticFolderPath
   expressApp.use staticMiddleware
 
-  # router: /
+  # Root Router
   rootRouter = routers.root
     staticFolderPath: config.staticFolderPath
 
-  expressApp.use "/", rootRouter
-
-  # router: /files
+  # Files Router
   filesRouter = routers.files
     constructDocument: constructDocument
     publishEvent: publishEvent
     documentRepository: documentRepository
     uploadsFolderPath: config.uploadsFolderPath
 
-  expressApp.use "/files/", filesRouter
-
-  # router: /documents
+  # Documents Router
   documentsRouter = routers.documents
     constructDocument: constructDocument
     publishEvent: publishEvent
     documentRepository: documentRepository
 
+  expressApp.use "/", rootRouter
+  expressApp.use "/files/", filesRouter
   expressApp.use "/documents", documentsRouter
 
-  # Start the server ...........................................................
+  #-----------------------------------------------------------------------------
+
+  httpServer = HTTP.createServer expressApp
+  socketServer = SocketIO httpServer
+
+  #-----------------------------------------------------------------------------
+
+  # Start the server
   httpServer.listen process.env.LISTEN, ->
     console.log "Demo server started", httpServer.address()
 
-    # Process events from the events queue .....................................
     channel = depends.amqpConsumer
     queue = config.amqp.eventsQueueName
     options = noAck: false
