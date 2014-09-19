@@ -24,10 +24,16 @@ Make sure rabbitmq is running
 rabbitmq-server
 ```
 
-Run the demo server, using the specified `PORT`:
+Start the demo server on port 3000:
 
 ```
-PORT=3000 npm run-script demo
+LISTEN=3000 npm start
+```
+
+Or listen on a socket:
+
+```
+LISTEN=./server.sock npm start
 ```
 
 ## Documents JSON

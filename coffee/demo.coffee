@@ -14,6 +14,7 @@ config = require './config'
 initializers = require './initializers'
 
 initializers.initialize config, (error, depends) ->
+  throw error if error?
 
   expressApp = Express()
   httpServer = HTTP.createServer expressApp
@@ -64,7 +65,7 @@ initializers.initialize config, (error, depends) ->
   expressApp.use "/documents", documentsRouter
 
   # Start the server ...........................................................
-  httpServer.listen process.env.PORT, ->
+  httpServer.listen process.env.LISTEN, ->
     console.log "Demo server started", httpServer.address()
 
     # Process events from the events queue .....................................

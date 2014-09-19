@@ -5,7 +5,7 @@
   "main": "./demo.coffee",
   "scripts": {
     "test": "./node_modules/coffee-script/bin/coffee -l README.md",
-    "demo": "./node_modules/coffee-script/bin/coffee coffee/demo.coffee"
+    "start": "./node_modules/coffee-script/bin/coffee coffee/demo.coffee"
   },
   "repository": {
     "type": "git",
