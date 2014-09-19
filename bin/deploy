@@ -1,4 +1,5 @@
 #!/bin/bash
+DEPLOY_NAME="boco-library-demo"
 UPSTART_CONF_PATH="/etc/init/$DEPLOY_NAME.conf"
 NGINX_AVAILABLE="/etc/nginx/sites-available/$DEPLOY_NAME.conf"
 NGINX_ENABLED="/etc/nginx/sites-enabled/$DEPLOY_NAME.conf"
@@ -16,11 +17,12 @@ sudo cp -f ./upstart.conf $UPSTART_CONF_PATH
 sudo cp -f ./nginx.conf $NGINX_AVAILABLE
 
 # Create the nginx 'enabled' symlink, if it doesnt exist
-if [ ! -f $NGNX_ENABLED ]; then
+if [ ! -f $NGINX_ENABLED ]; then
   sudo ln -s $NGINX_AVAILABLE $NGINX_ENABLED
 fi
 
 # Reload the upstart config
 sudo initctl reload-configuration
 # Restart the demo
-sudo service boco-library-demo restart
+sudo service boco-library-demo stop
+sudo service boco-library-demo start
