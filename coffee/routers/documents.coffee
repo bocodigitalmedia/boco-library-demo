@@ -9,7 +9,9 @@ documentsRouter = (config = {}) ->
   router = new Express.Router()
 
   listDocuments = (request, response) ->
-    response.json repository.collection
+    response.json
+      count: repository.collection.length
+      documents: repository.collection
 
   createDocument = (request, response) ->
     document = constructDocument request.body

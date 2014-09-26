@@ -56,8 +56,8 @@ var DemoApp = (function(window) {
       }
 
       json = xhr.response;
-      list = JSON.parse(json);
-      return callback(null, list);
+      response = JSON.parse(json);
+      return callback(null, response);
     };
 
     xhr.open("get", "/documents", true);
@@ -65,15 +65,11 @@ var DemoApp = (function(window) {
   }
 
   function updateAllDocumentsView(docs) {
-    var id, doc, docViewEl;
     viewEl.innerHTML = "";
-    for(id in docs) {
-      if(docs.hasOwnProperty(id)) {
-        doc = docs[id];
-        docViewEl = createDocumentViewElement(doc);
-        viewEl.appendChild(docViewEl);
-      }
-    }
+    docs.forEach(function(doc) {
+      var docViewEl = createDocumentViewElement(doc);
+      viewEl.appendChild(docViewEl);
+    });
   }
 
   function onDocumentDeleted(payload) {
@@ -98,14 +94,14 @@ var DemoApp = (function(window) {
   }
 
   function refreshAllDocumentsView() {
-    requestDocumentList(function(error, docs) {
+    requestDocumentList(function(error, response) {
 
       if(error != null) {
         console.error(error);
         throw error;
       }
 
-      return updateAllDocumentsView(docs);
+      return updateAllDocumentsView(response.documents);
     });
   }
 
