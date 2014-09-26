@@ -35,7 +35,9 @@ initializers.initialize config, (error, depends) ->
     new Document props
 
   documentsPath = Path.join config.dataFolderPath, "documents.json"
-  documents = require documentsPath
+  data = require documentsPath
+  documents = {}
+  documents[id] = constructDocument props for own id, props of data
   documentRepository = new DocumentRepository collection: documents
 
   # Configure Express

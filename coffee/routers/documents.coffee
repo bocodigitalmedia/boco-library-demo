@@ -28,6 +28,7 @@ documentsRouter = (config = {}) ->
     documentId = request.params.id
     document = constructDocument request.body
     document.id = documentId
+
     repository.update document, (error, document) ->
       throw error if error?
       publishEvent "library.document.updated", document: document

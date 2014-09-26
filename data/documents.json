@@ -2,11 +2,19 @@
   "c1a2215b-1612-4eb3-be06-6c1fa19af0bc": {
     "id": "c1a2215b-1612-4eb3-be06-6c1fa19af0bc",
     "url": "http://example.com/document-1.pdf",
+    "mimeType": "application/pdf",
+    "encoding": "7bit",
+    "createdAt": "2014-08-01T00:00:00.00Z",
+    "updatedAt": "2014-08-01T00:00:00.00Z",
     "name": "Example Document #1"
   },
   "a01aed54-9eb6-42b4-a2ad-425c2b6ea2f1": {
     "id": "a01aed54-9eb6-42b4-a2ad-425c2b6ea2f1",
     "url": "http://example.com/document-2.pdf",
+    "mimeType": "application/pdf",
+    "encoding": "7bit",
+    "createdAt": "2014-08-05T05:03:86.00Z",
+    "updatedAt": "2014-08-06T07:15:26.00Z",
     "name": "Example Document #2"
   }
 }

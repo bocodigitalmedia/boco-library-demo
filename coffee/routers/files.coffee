@@ -73,8 +73,14 @@ filesRouter = (config = {}) ->
       params = {}
       params.name = fields.name
       params.url = constructFileUrl fields.file.fileName
-      params.mimeType = fields.file.mimeType
-      params.encoding = fields.file.encoding
+
+      params.mimeType =
+        if isPresent(fields.mimeType) then fields.mimeType
+        else fields.file.mimeType
+
+      params.encoding =
+        if isPresent(fields.encoding) then fields.encoding
+        else fields.file.encoding
 
       document = constructDocument params
 
@@ -120,6 +126,8 @@ filesRouter = (config = {}) ->
       response.write "<form action=\"#{baseUrl}\" method=\"post\" enctype=\"multipart/form-data\">"
       response.write "<ul>"
       response.write '<li><label for="file">File</label><input type="file" name="file" /></li>'
+      response.write '<li><label for="mimeType">MIME Type</label><input type="text" name="mimeType" /></li>'
+      response.write '<li><label for="encoding">Encoding</label><input type="text" name="encoding" /></li>'
       response.write '<li><label for="name">Name</label><input type="text" name="name" /></li>'
       response.write '<li><input type="submit" /></li>'
       response.write "</ul>"

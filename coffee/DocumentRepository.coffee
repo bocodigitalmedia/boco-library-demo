@@ -35,6 +35,8 @@ class DocumentRepository
     return callback null, doc
 
   update: (doc, callback) ->
+    doc.updatedAt = new Date()
+
     unless doc.id?
       error = Error()
       error.name = "InvalidDocument"
@@ -63,5 +65,5 @@ class DocumentRepository
     doc = @collection[id]
     delete @collection[id]
     return callback null, doc
-    
+
 module.exports = DocumentRepository
