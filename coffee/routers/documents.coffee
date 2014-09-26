@@ -9,9 +9,14 @@ documentsRouter = (config = {}) ->
   router = new Express.Router()
 
   listDocuments = (request, response) ->
+    documents = repository.collection.sort (doc1, doc2) ->
+      d1 = new Date(doc1.createdAt).getTime()
+      d2 = new Date(doc2.createdAt).getTime()
+      return d2 - d1
+
     response.json
-      count: repository.collection.length
-      documents: repository.collection
+      count: documents.length
+      documents: documents
 
   createDocument = (request, response) ->
     document = constructDocument request.body
